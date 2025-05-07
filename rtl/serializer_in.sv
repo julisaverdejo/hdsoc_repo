@@ -62,7 +62,9 @@ module serializer_in (
     case (state_reg)
       ST_IDLE: begin
         if (start_i) begin
-          cnt_d = cnt_q + 1;
+          if (~ena) begin
+            cnt_d = cnt_q + 1;
+          end
           state_next = ST_SYNC;
         end
       end
