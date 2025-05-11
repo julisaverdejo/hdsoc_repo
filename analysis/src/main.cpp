@@ -131,7 +131,7 @@ int main() {
 	
   EncoderResult result = {0b100111100 , false};
 	
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 19; i++) {
 		std::cout << "Iter: " << i << "\n";
 		std::cout << "Input:  " << std::setw(12) <<  std::bitset<9>(initial.data) << " "
                          		<< std::setw(6) << initial.data << ", disp: " << result.disp << "\n";
