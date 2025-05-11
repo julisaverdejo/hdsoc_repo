@@ -17,7 +17,8 @@ module tb;
       .rst_i(vif.rst_i),
       .start_i(vif.start_i),
       .data_i(vif.data_i),
-      .data_o(vif.data_o)
+      .data_o(vif.data_o),
+      .ena_o(vif.ena_o)
   );
   
   initial begin

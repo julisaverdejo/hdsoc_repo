@@ -2,3 +2,8 @@
 vivado/
 
 # Files
+
+# C++
+bin/
+obj/
+*.exe

@@ -5,6 +5,7 @@ interface top_if (
   logic        start_i;
   logic [26:0] data_i;
   logic        data_o;
+  logic        ena_o;
   
   clocking cb @(posedge clk_i); 
     default input #1ns output #5ns; //these times are applied after 1 clk cycle
@@ -12,6 +13,7 @@ interface top_if (
     output  start_i;
     output  data_i;
     input   data_o;
+    input   ena_o;
   endclocking
   
 endinterface : top_if

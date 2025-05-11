@@ -7,12 +7,13 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
+    detect();
     // The write() task is executed aleatory
-    repeat(100) begin
-      x = $urandom_range(100,200);
-      #(x*1ns);
-      write();
-    end
+//    repeat(100) begin
+//      x = $urandom_range(100,200);
+//      #(x*1ns);
+//      write();
+//    end
 
     // Drain time
     repeat (200) @(vif.cb); 
@@ -29,6 +30,14 @@ module test (
     repeat (10) @(vif.cb);       
   endtask : reset 
 
+  task automatic detect();
+    for (int i = 0; i < 20; i++) begin
+      wait (vif.ena_o != 1);
+      @(vif.cb iff (vif.ena_o == 1));
+      //repeat (2) @(vif.cb);    
+      $display("Time %4t, i = %3d", $realtime, i);
+    end
+  endtask : detect
 
   task automatic write();
     // Configure write signal

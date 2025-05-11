@@ -18,7 +18,8 @@ module serializer_in (
     input  logic        rst_i,
     input  logic        start_i,
     input  logic [26:0] data_i,       
-    output logic        data_o
+    output logic        data_o,
+    output logic        ena_o
 );
 
   // Internal signals
@@ -94,4 +95,5 @@ module serializer_in (
     endcase
   end
 
+  assign ena_o = ena;
 endmodule
