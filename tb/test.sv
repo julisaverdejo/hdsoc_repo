@@ -35,7 +35,7 @@ module test (
     vif.rst_i = 'b1;
     vif.start_i = 'b0;
     vif.data_i = 'b0; 
-    repeat (5) @(vif.cb);
+    repeat (4) @(vif.cb);
     vif.cb.rst_i <= 'b0;    
   endtask : reset 
 
@@ -69,7 +69,7 @@ module test (
 
 
      $display("Time %4t", $realtime);
-    #(5ns);
+    #(10ns);
     //for (int i = 0; i < 10; i++) begin
     while (1) begin
       dataout[i] = vif.data_o;
@@ -85,7 +85,7 @@ module test (
       end  else begin
         i++;
       end
-      #(10ns);
+      #(20ns);
     end  
      
   endtask : capture

@@ -8,7 +8,7 @@ interface top_if (
   logic        ena_o;
   
   clocking cb @(posedge clk_i); 
-    default input #1ns output #5ns; //these times are applied after 1 clk cycle
+    default input #1ns output #10ns; //these times are applied after 1 clk cycle
     output  rst_i;
     output  start_i;
     output  data_i;
