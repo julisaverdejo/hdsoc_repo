@@ -69,7 +69,7 @@ module test (
 
 
      $display("Time %4t", $realtime);
-    #(10ns);
+    #(20ns);
     //for (int i = 0; i < 10; i++) begin
     while (1) begin
       dataout[i] = vif.data_o;
@@ -85,7 +85,7 @@ module test (
       end  else begin
         i++;
       end
-      #(20ns);
+      #(40ns);
     end  
      
   endtask : capture
