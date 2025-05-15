@@ -1,7 +1,7 @@
 module tb;
 
   // clock signal
-  localparam time ClkPeriod = 10ns;
+  localparam time ClkPeriod = 20ns;
   logic clk_i = 0;
   always #(ClkPeriod / 2) clk_i = ~clk_i;
   
