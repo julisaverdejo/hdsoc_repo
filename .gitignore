@@ -2,6 +2,7 @@
 vivado/
 
 # Files
+*.pdf
 
 # C++
 bin/
