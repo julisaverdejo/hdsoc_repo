@@ -12,6 +12,7 @@
 // [Status]       -
 // [Revisions]    -
 //==============================================================================
+`include "wb_serializer.pkg"
 
 module wb_serializer_in (
     //input  logic        start_i,      
@@ -29,6 +30,9 @@ module wb_serializer_in (
 		output logic        ERR_O,  // error
 		output logic [31:0] DAT_O  // data output
 );
+
+  import WBSerializer::*;
+  localparam ADDR_SIZE = $bits(NUM_REGS);
 
   // Internal signals
   logic start;
@@ -50,9 +54,11 @@ module wb_serializer_in (
 
   always_ff @(posedge CLK_I)
     if (RST_I) begin
-  	  ack <=  'b0;
-    end else if (!CYC_I) begin 
-  	  ack <= 'b0;
+  	  ACK_O <=  'b0;
+	end else begin
+	  if (!CYC_I) begin 
+  	    ACK_O <= 'b0;
+	  end
     end
 
 // WISHBONE BUS
@@ -61,21 +67,21 @@ module wb_serializer_in (
 
 always_comb begin
 	case (ADR_I[ADDR_SIZE-1:0])				
-		ADD_SHIFT_OUT: begin	
+		ADR_WRITE: begin	
 		  DAT_O = 'b0;
 		  ERR_O = 'b0;			
-		  ACK_O = WE_I ? ack : STB_I;
+		  ACK_O = STB_I && WE_I;
 		end
 
-		ADD_SHIFT_IN: begin	
+		ADR_READ: begin	
 			DAT_O = {31'b0, ena};
-			ERR_O = 'b0;		// Read only error
+			ERR_O = 'b0;		
 			ACK_O = STB_I && !WE_I;
 		end
 
 		default:	begin
 			DAT_O = 'b0;	
-			ERR_O = STB_I;		// read or write to an illegal address
+			ERR_O = 'b0;		
 			ACK_O = 'b0;
 		end
 	endcase
@@ -92,11 +98,11 @@ always_ff @(posedge CLK_I) begin
 	if (WE_I && STB_I) begin
 	  case (ADR_I[ADDR_SIZE-1:0])	
 
-	    ADD_SHIFT_OUT: begin
+	    ADR_WRITE: begin
 	      start <= 'b1;
 	      data  <= DAT_I;
 	    end				
-
+		
 	    default: begin
 	    end
 	  endcase
