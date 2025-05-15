@@ -12,7 +12,7 @@ module tb;
   test top_test (vif);
   
   // instantiation
-  serializer_in dut (
+  serializer dut (
       .clk_i(vif.clk_i),
       .rst_i(vif.rst_i),
       .start_i(vif.start_i),

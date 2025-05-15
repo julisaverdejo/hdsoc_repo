@@ -13,7 +13,7 @@
 // [Revisions]    -
 //==============================================================================
 
-module serializer_in (
+module serializer (
     input  logic        clk_i,
     input  logic        rst_i,
     input  logic        start_i,
