@@ -43,23 +43,24 @@ module wb_serializer_in (
     .start_i(start),
     .data_i(data),       
     .data_o(data_o),
-    .ena_o(DAT_O)
+    .cnt_pkt_o(cnt_pkt)
 );
 
   // WISHBONE BUS INTERNAL SIGNALS
-  logic ack;
+  logic [1:0] cnt_pkt, pkt;
 
   //Signal declaration
   logic [31:0] data;
 
-  always_ff @(posedge CLK_I)
-    if (RST_I) begin
-  	  ACK_O <=  'b0;
+  always_ff @(posedge CLK_I) begin
+	if (RST_I) begin
+	  pkt <= 'b0; 
+	end else if (!CYC_I) begin
+	  pkt <= 'b0;
 	end else begin
-	  if (!CYC_I) begin 
-  	    ACK_O <= 'b0;
-	  end
-    end
+	  pkt <= cnt_pkt;
+	end
+  end
 
 // WISHBONE BUS
 
@@ -70,15 +71,15 @@ always_comb begin
 		ADR_WRITE: begin	
 		  DAT_O = 'b0;
 		  ERR_O = 'b0;			
-		  ACK_O = STB_I && WE_I;
+		  ACK_O = WE_I ? pkt : STB_I;
 		end
-
+/*
 		ADR_READ: begin	
 			DAT_O = {31'b0, ena};
 			ERR_O = 'b0;		
-			ACK_O = STB_I && !WE_I;
+			ACK_O = WE_I ? pkt : STB_I;
 		end
-
+*/
 		default:	begin
 			DAT_O = 'b0;	
 			ERR_O = 'b0;		
@@ -102,7 +103,7 @@ always_ff @(posedge CLK_I) begin
 	      start <= 'b1;
 	      data  <= DAT_I;
 	    end				
-		
+
 	    default: begin
 	    end
 	  endcase

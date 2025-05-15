@@ -17,9 +17,9 @@ module serializer_in (
     input  logic        clk_i,
     input  logic        rst_i,
     input  logic        start_i,
-    input  logic [26:0] data_i,       
+    input  logic [23:0] data_i,       
     output logic        data_o,
-    output logic        ena_o
+    output logic  [1:0] cnt_pkt_o
 );
 
   // Internal signals
@@ -43,23 +43,23 @@ module serializer_in (
   //Signal declaration
   state_type_e state_reg, state_next;
   logic [8:0]  data_q, data_d;
-  logic [1:0]  cnt_q, cnt_d;
+  logic [1:0]  cnt_pkt_q, cnt_pkt_d;
   
   always_ff @(posedge clk_i) begin
     if (rst_i) begin
       state_reg <= ST_IDLE;
       data_q    <= {KCODE, COMMA};
-      cnt_q     <= 'b0;
+      cnt_pkt_q <= 'b0;
     end else begin
       state_reg <= state_next;
       data_q    <= data_d;
-      cnt_q     <= cnt_d;
+      cnt_pkt_q <= cnt_pkt_d;
     end
   end
 
   always_comb begin
     state_next = state_reg;
-    cnt_d      = cnt_q;
+    cnt_pkt_d      = cnt_pkt_q;
     case (state_reg)
       ST_IDLE: begin
         if (start_i) begin
@@ -72,11 +72,11 @@ module serializer_in (
 
       ST_SYNC: begin
         if (ena) begin
-          if (cnt_d == 3) begin
+          if (cnt_pkt_d == 3) begin
             cnt_d = 0;
             state_next = ST_IDLE;
           end else begin
-            cnt_d = cnt_q + 1;
+            cnt_pkt_d = cnt_pkt_q + 1;
           end
         end           
       end
@@ -86,14 +86,14 @@ module serializer_in (
 
   // Multiplexor
   always_comb begin
-    case(cnt_q)
+    case(cnt_pkt_q)
       2'd0 : data_d = {KCODE, COMMA};
-      2'd1 : data_d = data_i[8:0];
-      2'd2 : data_d = data_i[17:9];
-      2'd3 : data_d = data_i[26:18];
+      2'd1 : data_d = {1'b0, data_i[7:0]};
+      2'd2 : data_d = {1'b0, data_i[15:8]};
+      2'd3 : data_d = {1'b0, data_i[23:16]};
       default : data_d = {KCODE, COMMA};
     endcase
   end
 
-  assign ena_o = ena;
+  assign cnt_pkt_o = cnt_pkt_q;
 endmodule
