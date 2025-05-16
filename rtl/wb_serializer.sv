@@ -58,7 +58,7 @@ module wb_serializer_in (
 	end else if (!CYC_I) begin
 	  pkt <= 'b0;
 	end else begin
-	  pkt <= cnt_pkt;
+      pkt <= (cnt_pkt == 'd3);
 	end
   end
 
