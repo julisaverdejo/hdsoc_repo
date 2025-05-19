@@ -26,7 +26,7 @@ module wb_serializer (
 	input  logic [31:0] ADR_I,  // address
 	input  logic [31:0] DAT_I,  // data input  
 	input  logic        STB_I,  // strobe      
-    input  logic        WE_I,   // write enable
+    	input  logic        WE_I,   // write enable
 	output logic        ACK_O,  // acknowledge
 	output logic        ERR_O,  // error
 	output logic [31:0] DAT_O  // data output
@@ -37,6 +37,13 @@ module wb_serializer (
 
   // Internal signals
   logic start, aux_d, aux_q;
+  
+  // WISHBONE BUS INTERNAL SIGNALS
+  logic [1:0] cnt_pkt; // counter of packets
+  logic endpkt;       // flag end of packet
+  
+  //Signal declaration
+  logic [31:0] data;
 
   serializer_in mod_serialin (
     .clk_i(CLK_I),
@@ -46,14 +53,7 @@ module wb_serializer (
     .data_o(data_o),
     .cnt_pkt_o(cnt_pkt),
 	.ena_o(ena_o)
-);
-
-  // WISHBONE BUS INTERNAL SIGNALS
-  logic [1:0] cnt_pkt; // counter of packets
-  logic endpkt;       // flag end of packet
-
-  //Signal declaration
-  logic [31:0] data;
+  );
 
   always_ff @(posedge CLK_I) begin
 	if (RST_I) begin

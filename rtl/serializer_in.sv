@@ -29,14 +29,6 @@ module serializer_in (
   // Default values if not sending anything
   localparam logic [7:0] COMMA = 8'h3C;
   localparam logic       KCODE = 1'b1;
-
-  tx_serial mod_tx_serial (
-    .clk_i(clk_i),
-    .rst_i(rst_i), 
-    .data_i(data_q),
-    .data_o(data_o),
-    .ena_o(ena)
-  );
   
   // FSM States
   typedef enum {ST_IDLE, ST_SYNC} state_type_e;
@@ -45,6 +37,15 @@ module serializer_in (
   state_type_e state_reg, state_next;
   logic [8:0]  data_q, data_d;
   logic [1:0]  cnt_pkt_q, cnt_pkt_d;
+
+  tx_serial mod_tx_serial (
+    .clk_i(clk_i),
+    .rst_i(rst_i), 
+    .data_i(data_q),
+    .data_o(data_o),
+    .ena_o(ena)
+  );
+ 
   
   always_ff @(posedge clk_i) begin
     if (rst_i) begin

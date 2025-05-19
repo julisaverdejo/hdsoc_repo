@@ -12,6 +12,12 @@ module test (
     $display("Time %4t, IM OUT", $realtime);
     write();
     $display("Time %4t, IM OUT", $realtime);
+       write();
+    $display("Time %4t, IM OUT", $realtime);
+       write();
+    $display("Time %4t, IM OUT", $realtime);
+       write();
+    $display("Time %4t, IM OUT", $realtime);
 
     // fork     
     //   begin
