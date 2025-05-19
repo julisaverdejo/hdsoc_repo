@@ -7,23 +7,29 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    fork
-      begin
-        repeat(100) begin
-          x = $urandom_range(100,200);
-          #(x*1ns);
-          write();
-        end
-      end
 
-      begin
-        capture();
-      end
-      
-    join
-//    detect();
+    write();
+    $display("Time %4t, IM OUT", $realtime);
+    write();
+    $display("Time %4t, IM OUT", $realtime);
+
+    // fork     
+    //   begin
+    //     repeat(1) begin
+    //       x = $urandom_range(1000,2000);
+    //       #(x*1ns);
+    //       write();
+    //     end
+    //   end
+
+    //   begin
+    //     capture();
+    //   end
+
+    // join
+
+    //    detect();
     // The write() task is executed aleatory
-
 
     // Drain time
     repeat (200) @(vif.cb); 
@@ -32,13 +38,17 @@ module test (
   end
   
   task automatic reset();
-    vif.rst_i = 'b1;
-    vif.start_i = 'b0;
-    vif.data_i = 'b0; 
-    repeat (4) @(vif.cb);
-    vif.cb.rst_i <= 'b0;    
+    vif.RST_I = 1'b1;
+    vif.CYC_I = 1'b0;
+    vif.ADR_I = 32'b0;
+    vif.DAT_I = 32'h0;
+    vif.STB_I = 1'b0;
+    vif.WE_I  = 1'b0; 
+    @(vif.cb);
+    vif.cb.RST_I <= 'b0;
+    repeat (200) @(vif.cb);    
   endtask : reset 
-
+/*
   task automatic detect();
     for (int i = 0; i < 20; i++) begin
       wait (vif.ena_o != 1);
@@ -47,19 +57,31 @@ module test (
       $display("Time %4t, i = %3d", $realtime, i);
     end
   endtask : detect
-
+*/
   task automatic write();
     // Configure write signal
     @(vif.cb);
-    vif.cb.start_i <= 'b1;
-    vif.cb.data_i <= 27'b000000011_000000010_000000001;
-    @(vif.cb);
-    vif.cb.start_i <= 'b0;
-    repeat (45) @(vif.cb);   
+    $display("Time %4t, CB here", $realtime);
+    vif.cb.CYC_I <= 1'b1;
+    vif.cb.ADR_I <= 32'b0;
+    vif.cb.DAT_I <= 32'h30201;
+    vif.cb.STB_I <= 1'b1;
+    vif.cb.WE_I  <= 1'b1;
+    #(100ns);
+    $display("Time %4t, WATING ACK", $realtime);
+    wait (vif.cb.ACK_O != 1);
+    @(vif.cb iff (vif.ACK_O == 1));
+    $display("Time %4t, Detected", $realtime);
+    vif.CYC_I = 1'b0;
+    vif.ADR_I = 32'b0;
+    vif.DAT_I = 32'h0;
+    vif.STB_I = 1'b0;
+    vif.WE_I  = 1'b0; 
+    repeat (45) @(vif.cb);
   endtask : write  
 
   task automatic capture();
-    bit [9:0] dataout;
+    bit [31:0] dataout;
     int i = 0;
     int cnt = 0;    
     // wait (vif.ena_o != 1);
@@ -68,7 +90,7 @@ module test (
     wait (vif.ena_o == 0);
 
 
-     $display("Time %4t", $realtime);
+    $display("Time %4t", $realtime);
     #(20ns);
     //for (int i = 0; i < 10; i++) begin
     while (1) begin

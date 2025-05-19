@@ -17,9 +17,10 @@ module serializer_in (
     input  logic        clk_i,
     input  logic        rst_i,
     input  logic        start_i,
-    input  logic [23:0] data_i,       
+    input  logic [31:0] data_i,       
     output logic        data_o,
-    output logic  [1:0] cnt_pkt_o
+    output logic  [1:0] cnt_pkt_o,
+    output logic        ena_o
 );
 
   // Internal signals
@@ -73,7 +74,7 @@ module serializer_in (
       ST_SYNC: begin
         if (ena) begin
           if (cnt_pkt_d == 3) begin
-            cnt_d = 0;
+            cnt_pkt_d = 0;
             state_next = ST_IDLE;
           end else begin
             cnt_pkt_d = cnt_pkt_q + 1;
@@ -96,4 +97,5 @@ module serializer_in (
   end
 
   assign cnt_pkt_o = cnt_pkt_q;
+  assign ena_o = ena;
 endmodule
