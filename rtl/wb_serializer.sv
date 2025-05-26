@@ -26,7 +26,7 @@ module wb_serializer (
 	input  logic [31:0] ADR_I,  // address
 	input  logic [31:0] DAT_I,  // data input  
 	input  logic        STB_I,  // strobe      
-    	input  logic        WE_I,   // write enable
+    input  logic        WE_I,   // write enable
 	output logic        ACK_O,  // acknowledge
 	output logic        ERR_O,  // error
 	output logic [31:0] DAT_O  // data output

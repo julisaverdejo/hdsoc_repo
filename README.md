@@ -1,5 +1,7 @@
 # hdsoc_repo
 
+## Setup
+
 ```bash
 setenv GIT_ROOT `git rev-parse --show-toplevel`
 setenv TB_WORK $GIT_ROOT/work/tb

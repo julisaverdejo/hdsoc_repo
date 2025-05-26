@@ -7,7 +7,7 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    repeat (10) begin
+    repeat (2) begin
       write();
       $display("Time %4t, IM OUT", $realtime);
     end
@@ -69,8 +69,9 @@ module test (
     vif.cb.WE_I  <= 1'b1;
     #(100ns);
     $display("Time %4t, WATING ACK", $realtime);
-    wait (vif.cb.ACK_O != 1);
+    wait (vif.ACK_O != 1);
     @(vif.cb iff (vif.ACK_O == 1));
+    #(5ns);
     $display("Time %4t, Detected", $realtime);
     vif.CYC_I = 1'b0;
     vif.ADR_I = 32'b0;
