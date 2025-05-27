@@ -67,18 +67,18 @@ module test (
     vif.cb.DAT_I <= 32'h30201;
     vif.cb.STB_I <= 1'b1;
     vif.cb.WE_I  <= 1'b1;
-    #(100ns);
+    repeat (5) @(vif.cb);
     $display("Time %4t, WATING ACK", $realtime);
     wait (vif.ACK_O != 1);
-    @(vif.cb iff (vif.ACK_O == 1));
-    #(5ns);
+    @(vif.cb iff (vif.cb.ACK_O == 1));
     $display("Time %4t, Detected", $realtime);
+    @(vif.cb);
     vif.CYC_I = 1'b0;
     vif.ADR_I = 32'b0;
     vif.DAT_I = 32'h0;
     vif.STB_I = 1'b0;
     vif.WE_I  = 1'b0; 
-    repeat (45) @(vif.cb);
+    repeat (5) @(vif.cb);
   endtask : write  
 
   task automatic capture();
