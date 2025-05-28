@@ -7,12 +7,10 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    write();
-    write();
-    // repeat (2) begin
-    //   write();
-    //   $display("Time %4t, IM OUT", $realtime);
-    // end
+    repeat (2) begin
+      write();
+      $display("Time %4t, IM OUT", $realtime);
+    end
     
 
     // fork     
