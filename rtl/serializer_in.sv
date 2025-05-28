@@ -19,7 +19,6 @@ module serializer_in (
     input  logic        start_i,
     input  logic [31:0] data_i,       
     output logic        data_o,
-    output logic  [2:0] cnt_pkt_o,
     output logic        ena_o,
     output logic        eot_o
 );
@@ -69,11 +68,11 @@ module serializer_in (
     eot_d      = eot_q;
     case (state_reg)
       ST_IDLE: begin
+        eot_d = 'b0;
         if (start_i) begin
           // if (ena) begin
           //   cnt_d = cnt_q + 1;
           // end
-          eot_d = 'b0;
           state_next = ST_SYNC;
         end
       end

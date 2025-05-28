@@ -41,8 +41,7 @@ module wb_serializer (
   logic ena;
   
   // WISHBONE BUS INTERNAL SIGNALS
-  logic [2:0] cnt_pkt; // counter of packets
-  logic eot;       // flag end of packet
+  logic eot;  
   
   //Signal declaration
   logic [31:0] data;
@@ -53,7 +52,6 @@ module wb_serializer (
     .start_i(start),
     .data_i(data),       
     .data_o(data_o),
-    .cnt_pkt_o(cnt_pkt),
 	.ena_o(ena),
 	.eot_o(eot)
   );

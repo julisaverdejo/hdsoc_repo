@@ -8,6 +8,7 @@ module test (
     $display("Begin Of Simulation.");   
     reset();
     write();
+    write();
     // repeat (2) begin
     //   write();
     //   $display("Time %4t, IM OUT", $realtime);
