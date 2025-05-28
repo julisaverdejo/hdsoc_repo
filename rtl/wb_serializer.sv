@@ -41,8 +41,8 @@ module wb_serializer (
   logic ena;
   
   // WISHBONE BUS INTERNAL SIGNALS
-  logic [1:0] cnt_pkt; // counter of packets
-  logic endpkt;       // flag end of packet
+  logic [2:0] cnt_pkt; // counter of packets
+  logic eot;       // flag end of packet
   
   //Signal declaration
   logic [31:0] data;
@@ -54,59 +54,9 @@ module wb_serializer (
     .data_i(data),       
     .data_o(data_o),
     .cnt_pkt_o(cnt_pkt),
-	.ena_o(ena)
+	.ena_o(ena),
+	.eot_o(eot)
   );
-
-  assign ena_o = ena;
-  assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
-  assign start = aux_d & ~aux_q;
-
-//************************************************************************************
-  // FSM States
-  typedef enum {ST_IDLE, ST_ADDENA} state_type_e;
-
-  //Signal declaration
-  state_type_e state_reg, state_next;
-  logic eobyte;
-  logic [2:0] cnt_byte_q, cnt_byte_d;
-
-  always_ff @(posedge CLK_I) begin
-    if (RST_I) begin
-      state_reg <= ST_IDLE;
-      cnt_byte_q <= 'b0;
-    end else begin
-      state_reg <= state_next;
-      cnt_byte_q <= cnt_byte_d;
-    end
-  end
-
-  always_comb begin
-    state_next = state_reg;
-    cnt_byte_d = cnt_byte_q;
-    case (state_reg)
-      ST_IDLE: begin
-        if (start) begin
-		  cnt_byte_d = 'b0;
-          state_next = ST_ADDENA;
-        end
-      end
-
-      ST_ADDENA: begin
-        if (ena) begin
-          if (cnt_byte_d == 'd5) begin
-            cnt_byte_d = 'b0;
-            state_next = ST_IDLE;
-          end else begin
-            cnt_byte_d = cnt_byte_q + 1;
-          end
-        end           
-      end
-
-    endcase    
-  end
-
-  assign eobyte = (cnt_byte_q == 'd5);
-//************************************************************************************
 
 // WISHBONE BUS
 
@@ -117,7 +67,7 @@ always_comb begin
 		ADR_WRITE: begin	
 		  DAT_O = 'b0;
 		  ERR_O = 'b0;			
-		  ACK_O = WE_I ? eobyte : STB_I;
+		  ACK_O = WE_I ? eot : STB_I;
 		end
 /*
 		ADR_READ: begin	
@@ -159,5 +109,8 @@ always_ff @(posedge CLK_I) begin
   end
 end
 
+assign ena_o = ena;
+assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
+assign start = aux_d & ~aux_q;
 
 endmodule

@@ -19,8 +19,9 @@ module serializer_in (
     input  logic        start_i,
     input  logic [31:0] data_i,       
     output logic        data_o,
-    output logic  [1:0] cnt_pkt_o,
-    output logic        ena_o
+    output logic  [2:0] cnt_pkt_o,
+    output logic        ena_o,
+    output logic        eot_o
 );
 
   // Internal signals
@@ -36,7 +37,8 @@ module serializer_in (
   //Signal declaration
   state_type_e state_reg, state_next;
   logic [8:0]  data_q, data_d;
-  logic [1:0]  cnt_pkt_q, cnt_pkt_d;
+  logic [2:0]  cnt_pkt_q, cnt_pkt_d;
+  logic eot_q, eot_d;
 
   tx_serial mod_tx_serial (
     .clk_i(clk_i),
@@ -52,29 +54,34 @@ module serializer_in (
       state_reg <= ST_IDLE;
       data_q    <= {KCODE, COMMA};
       cnt_pkt_q <= 'b0;
+      eot_q     <= 'b0;
     end else begin
       state_reg <= state_next;
       data_q    <= data_d;
       cnt_pkt_q <= cnt_pkt_d;
+      eot_q     <= eot_d;
     end
   end
 
   always_comb begin
     state_next = state_reg;
-    cnt_pkt_d      = cnt_pkt_q;
+    cnt_pkt_d  = cnt_pkt_q;
+    eot_d      = eot_q;
     case (state_reg)
       ST_IDLE: begin
         if (start_i) begin
           // if (ena) begin
           //   cnt_d = cnt_q + 1;
           // end
+          eot_d = 'b0;
           state_next = ST_SYNC;
         end
       end
 
       ST_SYNC: begin
         if (ena) begin
-          if (cnt_pkt_d == 3) begin
+          if (cnt_pkt_d == 4) begin
+            eot_d = 'b1;
             cnt_pkt_d = 0;
             state_next = ST_IDLE;
           end else begin
@@ -89,14 +96,15 @@ module serializer_in (
   // Multiplexor
   always_comb begin
     case(cnt_pkt_q)
-      2'd0 : data_d = {KCODE, COMMA};
-      2'd1 : data_d = {1'b0, data_i[7:0]};
-      2'd2 : data_d = {1'b0, data_i[15:8]};
-      2'd3 : data_d = {1'b0, data_i[23:16]};
+      3'd0 : data_d = {KCODE, COMMA};
+      3'd1 : data_d = {1'b0, data_i[7:0]};
+      3'd2 : data_d = {1'b0, data_i[15:8]};
+      3'd3 : data_d = {1'b0, data_i[23:16]};
       default : data_d = {KCODE, COMMA};
     endcase
   end
 
   assign cnt_pkt_o = cnt_pkt_q;
   assign ena_o = ena;
+  assign eot_o = eot_q;
 endmodule
