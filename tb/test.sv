@@ -7,10 +7,11 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    repeat (2) begin
-      write();
-      $display("Time %4t, IM OUT", $realtime);
-    end
+    write();
+    // repeat (2) begin
+    //   write();
+    //   $display("Time %4t, IM OUT", $realtime);
+    // end
     
 
     // fork     
@@ -67,10 +68,10 @@ module test (
     vif.cb.DAT_I <= 32'h30201;
     vif.cb.STB_I <= 1'b1;
     vif.cb.WE_I  <= 1'b1;
-    repeat (5) @(vif.cb);
+    #(50ns);
     $display("Time %4t, WATING ACK", $realtime);
     wait (vif.ACK_O != 1);
-    @(vif.cb iff (vif.cb.ACK_O == 1));
+    @(vif.cb iff (vif.ACK_O == 1));
     $display("Time %4t, Detected", $realtime);
     @(vif.cb);
     vif.CYC_I = 1'b0;

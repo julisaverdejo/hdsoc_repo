@@ -15,6 +15,7 @@ module tb;
   wb_serializer dut (
     .data_o(vif.data_o),
     .ena_o(vif.ena_o),
+    //.eobyte_o(vif.eobyte_o),
 	  .CLK_I(vif.CLK_I),
 	  .RST_I(vif.RST_I),
 	  .CYC_I(vif.CYC_I),
