@@ -7,9 +7,11 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    repeat (2) begin
+    repeat (1000) begin
+      x = $urandom_range(2000,3000);
+      #(x*1ns);
       write();
-      $display("Time %4t, IM OUT", $realtime);
+      //$display("Time %4t, IM OUT", $realtime);
     end
     
 
