@@ -7,34 +7,33 @@ module test (
   initial begin
     $display("Begin Of Simulation.");   
     reset();
-    repeat (1000) begin
-      x = $urandom_range(2000,3000);
-      #(x*1ns);
-      write();
-      //$display("Time %4t, IM OUT", $realtime);
-    end
-    
+    // repeat (1000) begin
+    //   x = $urandom_range(2000,3000);
+    //   #(x*1ns);
+    //   write();
+    //   //$display("Time %4t, IM OUT", $realtime);
+    // end
+    fork     
+      begin
+        // repeat(1) begin
+        //   x = $urandom_range(2000,3000);
+        //   #(x*1ns);
+        //   write();
+        // end
+        write();
+      end
 
-    // fork     
-    //   begin
-    //     repeat(1) begin
-    //       x = $urandom_range(1000,2000);
-    //       #(x*1ns);
-    //       write();
-    //     end
-    //   end
+      begin
+        capture();
+      end
 
-    //   begin
-    //     capture();
-    //   end
-
-    // join
+    join_any
 
     //    detect();
     // The write() task is executed aleatory
 
     // Drain time
-    repeat (200) @(vif.cb); 
+    repeat (10) @(vif.cb); 
     $display("End Of Simulation.");
     $finish;
   end
@@ -48,7 +47,7 @@ module test (
     vif.WE_I  = 1'b0; 
     @(vif.cb);
     vif.cb.RST_I <= 'b0;
-    repeat (200) @(vif.cb);    
+    repeat (10) @(vif.cb);    
   endtask : reset 
 /*
   task automatic detect();
@@ -91,8 +90,6 @@ module test (
     // @(vif.cb iff (vif.ena_o == 1));
     wait (vif.ena_o != 0); 
     wait (vif.ena_o == 0);
-
-
     $display("Time %4t", $realtime);
     #(20ns);
     //for (int i = 0; i < 10; i++) begin
@@ -102,17 +99,14 @@ module test (
         $display("Time %4t, value : %10b %3d", $realtime, dataout, dataout);
         cnt = cnt + 1;
         i = 0;
-
         if (cnt == 100) begin
           break;
         end
-
       end  else begin
         i++;
       end
       #(40ns);
-    end  
-     
+    end      
   endtask : capture
 
 endmodule : test
