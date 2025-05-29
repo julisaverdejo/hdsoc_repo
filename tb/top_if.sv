@@ -2,7 +2,6 @@ interface top_if (
     input logic CLK_I
  ); 
     logic        data_o;
-    //logic        eobyte_o;
     logic        ena_o;
 
     // WISHBONE BUS INTERFACE
@@ -28,7 +27,6 @@ interface top_if (
     input   ERR_O;
     input   DAT_O;
     input   data_o;
-    //input   eobyte_o;
     input   ena_o;
   endclocking
   
