@@ -18,7 +18,6 @@ module wb_serializer (
     //input  logic        start_i,      
     output logic  data_o,
 	output logic  ena_o,
-	//output logic  eobyte_o,
 
     // WISHBONE BUS INTERFACE
 	input  logic        CLK_I,	// clock
