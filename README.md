@@ -12,3 +12,7 @@ source setup_synopsys_eda.tcsh
 make
 ```
 
+## Notes
+
+
+## References
