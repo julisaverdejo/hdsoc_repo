@@ -15,12 +15,11 @@ module test (
     // end
     fork     
       begin
-        // repeat(1) begin
-        //   x = $urandom_range(2000,3000);
-        //   #(x*1ns);
-        //   write();
-        // end
-        write();
+        repeat(10) begin
+          x = $urandom_range(1000,2000);
+          #(x*1ns);
+          write();
+        end
       end
 
       begin
