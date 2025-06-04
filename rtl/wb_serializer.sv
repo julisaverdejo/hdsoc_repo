@@ -102,15 +102,23 @@ assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
 // assign start = aux_d & ~aux_q;
 assign start = aux_q;
 
-logic reg_aux_start, start_slow;
+logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_slow;
 
 always_ff @(posedge clk_i, posedge rst_i) begin
   if (rst_i) begin
-    reg_aux_start <= 'b0;
-    start_slow <= 'b0;
+    reg_aux1_start <= 'b0;
+    reg_aux2_start <= 'b0;
+    reg_aux3_start <= 'b0;	
+	start_slow     <= 'b0;
   end else begin
-    reg_aux_start <= start;
-    start_slow <= reg_aux_start;	
+    reg_aux1_start <= start;
+    reg_aux2_start <= reg_aux1_start;
+    reg_aux3_start <= reg_aux2_start;
+	if (reg_aux3_start == 0 && reg_aux2_start == 1) begin
+      start_slow <= 1'b1;
+	end else begin
+	  start_slow <= 1'b0;
+	end
   end
 end
 
