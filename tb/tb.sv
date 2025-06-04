@@ -1,20 +1,27 @@
 module tb;
 
-  // clock signal
+  // Wishbone bus clock signal - 50 MHz
   localparam time ClkPeriod = 20ns;
   logic CLK_I = 0;
   always #(ClkPeriod / 2) CLK_I = ~CLK_I;
-  
+
+  // New clock signal - 25 MHz
+  localparam time ClkPeriodNew = 40ns;
+  logic clk_i = 0;
+  always #(ClkPeriodNew / 2) clk_i = ~clk_i;
+
   // interface
-  top_if vif (CLK_I);
+  top_if vif (CLK_I, clk_i);
   
   // test
   test top_test (vif);
   
   // instantiation
   wb_serializer dut (
+    .clk_i(vif.clk_i),
+    .rst_i(vif.rst_i),
     .data_o(vif.data_o),
-    .ena_o(vif.ena_o),
+    //.ena_o(vif.ena_o),
 	  .CLK_I(vif.CLK_I),
 	  .RST_I(vif.RST_I),
 	  .CYC_I(vif.CYC_I),
