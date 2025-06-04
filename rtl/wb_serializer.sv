@@ -46,22 +46,6 @@ module wb_serializer (
   //Signal declaration
   logic [31:0] data;
 
-  serializer_in mod_serialin (
-    .clk_i(clk_i),
-    .rst_i(rst_i),
-    .start_i(start_slow),
-    .data_i(data),       
-    .data_o(data_o),
-	//.ena_o(ena),
-	.eot_o(eot)
-  );
-
-  always_ff @(posedge CLK_I) begin
-    reg_aux_eot <= eot;
-    eot_slow <= reg_aux_eot;
-  end
-
-
 // WISHBONE BUS
 
 	// READ: SLAVE ---> MASTER
@@ -123,5 +107,22 @@ always_ff @(posedge clk_i) begin
   reg_aux1 <= start;
   start_slow <= reg_aux1;
 end
+
+
+  serializer_in mod_serialin (
+    .clk_i(clk_i),
+    .rst_i(rst_i),
+    .start_i(start_slow),
+    .data_i(data),       
+    .data_o(data_o),
+	//.ena_o(ena),
+	.eot_o(eot)
+  );
+
+  always_ff @(posedge CLK_I) begin
+    reg_aux_eot <= eot;
+    eot_slow <= reg_aux_eot;
+  end
+    
 
 endmodule

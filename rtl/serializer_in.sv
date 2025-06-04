@@ -19,7 +19,7 @@ module serializer_in (
     input  logic        start_i,
     input  logic [31:0] data_i,       
     output logic        data_o,
-    output logic        ena_o,
+    //output logic        ena_o,
     output logic        eot_o
 );
 
