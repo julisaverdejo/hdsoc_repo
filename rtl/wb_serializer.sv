@@ -103,9 +103,14 @@ assign start = aux_d & ~aux_q;
 
 logic reg_aux1, start_slow;
 
-always_ff @(posedge clk_i) begin
-  reg_aux1 <= start;
-  start_slow <= reg_aux1;
+always_ff @(posedge clk_i, posedge rst_i) begin
+  if (rst_i) begin
+    reg_aux1 <= 'b0;
+    start_slow <= 'b0;
+  end else begin
+    reg_aux1 <= start;
+    start_slow <= reg_aux1;	
+  end
 end
 
 
