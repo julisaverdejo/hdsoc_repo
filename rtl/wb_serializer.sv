@@ -99,17 +99,18 @@ end
 
 //assign ena_o = ena;
 assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
-assign start = aux_d & ~aux_q;
+// assign start = aux_d & ~aux_q;
+assign start = aux_q;
 
-logic reg_aux1, start_slow;
+logic reg_aux_start, start_slow;
 
 always_ff @(posedge clk_i, posedge rst_i) begin
   if (rst_i) begin
-    reg_aux1 <= 'b0;
+    reg_aux_start <= 'b0;
     start_slow <= 'b0;
   end else begin
-    reg_aux1 <= start;
-    start_slow <= reg_aux1;	
+    reg_aux_start <= start;
+    start_slow <= reg_aux_start;	
   end
 end
 
@@ -124,9 +125,14 @@ end
 	.eot_o(eot)
   );
 
-  always_ff @(posedge CLK_I) begin
-    reg_aux_eot <= eot;
-    eot_slow <= reg_aux_eot;
+  always_ff @(posedge CLK_I, posedge RST_I) begin
+	if (RST_I) begin
+      reg_aux_eot <= 'b0;
+      eot_slow <= 'b0;
+	end else begin
+      reg_aux_eot <= eot;
+      eot_slow <= reg_aux_eot;		
+	end
   end
     
 
