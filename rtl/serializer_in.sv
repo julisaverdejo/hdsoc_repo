@@ -103,6 +103,6 @@ module serializer_in (
     endcase
   end
 
-  assign ena_o = ena;
+  //assign ena_o = ena;
   assign eot_o = eot_q;
 endmodule
