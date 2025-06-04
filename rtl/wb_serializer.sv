@@ -15,7 +15,8 @@
 `include "wb_serializer_pkg.sv"
 
 module wb_serializer (
-    //input  logic        start_i,      
+    input  logic  clk_i, 
+	input  logic  rst_i,
     output logic  data_o,
 	output logic  ena_o,
 
@@ -40,20 +41,26 @@ module wb_serializer (
   logic ena;
   
   // WISHBONE BUS INTERNAL SIGNALS
-  logic eot;  
+  logic eot, reg_aux_eot, eot_slow;  
   
   //Signal declaration
   logic [31:0] data;
 
   serializer_in mod_serialin (
-    .clk_i(CLK_I),
-    .rst_i(RST_I),
-    .start_i(start),
+    .clk_i(clk_i),
+    .rst_i(rst_i),
+    .start_i(start_slow),
     .data_i(data),       
     .data_o(data_o),
 	.ena_o(ena),
 	.eot_o(eot)
   );
+
+  always_ff @(posedge CLK_I) begin
+    reg_aux_eot <= eot;
+    eot_slow <= reg_aux_eot;
+  end
+
 
 // WISHBONE BUS
 
@@ -64,7 +71,7 @@ always_comb begin
 		ADR_WRITE: begin	
 		  DAT_O = 'b0;
 		  ERR_O = 'b0;			
-		  ACK_O = WE_I ? eot : STB_I;
+		  ACK_O = WE_I ? eot_slow : STB_I;
 		end
 /*
 		ADR_READ: begin	
@@ -109,5 +116,12 @@ end
 assign ena_o = ena;
 assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
 assign start = aux_d & ~aux_q;
+
+logic reg_aux1, start_slow;
+
+always_ff @(posedge clk_i) begin
+  reg_aux1 <= start;
+  start_slow <= reg_aux1;
+end
 
 endmodule
