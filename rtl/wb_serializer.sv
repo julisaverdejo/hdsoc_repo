@@ -37,11 +37,11 @@ module wb_serializer (
   localparam ADDR_SIZE = $bits(NUM_REGS);
 
   // Internal signals
-  logic start, aux_d, aux_q;
+  logic start, aux_start_d, aux_start_q;
   //logic ena;
-  
-  // WISHBONE BUS INTERNAL SIGNALS
   logic eot, reg_aux1_eot, reg_aux2_eot, eot_slow; 
+
+  // WISHBONE BUS INTERNAL SIGNALS
     
   //Signal declaration
   logic [31:0] data;
@@ -78,10 +78,10 @@ always_ff @(posedge CLK_I) begin
   if (RST_I) begin
     //start <= 'b0;
 	data  <= 'b0;
-	aux_q <= 1'b0;
+	aux_start_q <= 1'b0;
   end else begin
     //start <= 'b0;
-    aux_q <= aux_d;
+    aux_start_q <= aux_start_d;
 	if (WE_I && STB_I) begin
 	  case (ADR_I[ADDR_SIZE-1:0])	
 
@@ -98,22 +98,19 @@ always_ff @(posedge CLK_I) begin
 end
 
 //assign ena_o = ena;
-assign aux_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
-// assign start = aux_d & ~aux_q;
-assign start = aux_q;
+assign aux_start_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
+assign start = aux_start_q;
 
 logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_slow;
 
 always_ff @(posedge clk_i, posedge rst_i) begin
   if (rst_i) begin
     reg_aux1_start <= 'b0;
-    reg_aux2_start <= 'b0;
-    //reg_aux3_start <= 'b0;	
+    reg_aux2_start <= 'b0;	
 	start_slow     <= 'b0;
   end else begin
     reg_aux1_start <= start;
     reg_aux2_start <= reg_aux1_start;
-    //reg_aux3_start <= reg_aux2_start;
 	if (reg_aux2_start == 0 && reg_aux1_start == 1) begin
       start_slow <= 1'b1;
 	end else begin
