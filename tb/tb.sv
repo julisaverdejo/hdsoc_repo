@@ -12,20 +12,20 @@ module tb;
 
   // New clock signal - 62.5 MHz
   localparam time ClkPeriodNew = 16ns;
-  logic clk_i = 0;
-  always #(ClkPeriodNew / 2) clk_i = ~clk_i;
+  logic CLK_NEWFREQ_I = 0;
+  always #(ClkPeriodNew / 2) CLK_NEWFREQ_I = ~CLK_NEWFREQ_I;
 
 
   // interface
-  top_if vif (CLK_I, clk_i);
+  top_if vif (CLK_I, CLK_NEWFREQ_I);
   
   // test
   test top_test (vif);
   
   // instantiation
   wb_serializer dut (
-    .clk_i(vif.clk_i),
-    .rst_i(vif.rst_i),
+    .CLK_NEWFREQ_I(vif.CLK_NEWFREQ_I),
+    .RST_NEWFREQ_I(vif.RST_NEWFREQ_I),
     .data_o(vif.data_o),
     //.ena_o(vif.ena_o),
 	  .CLK_I(vif.CLK_I),

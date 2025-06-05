@@ -40,7 +40,7 @@ module test (
   end
   
   task automatic reset();
-    vif.rst_i = 1'b1;
+    vif.RST_NEWFREQ_I = 1'b1;
     vif.RST_I = 1'b1;
     vif.CYC_I = 1'b0;
     vif.ADR_I = 32'b0;
@@ -51,7 +51,7 @@ module test (
     vif.cb.RST_I <= 'b0;
     //repeat (10) @(vif.cb);  
     @(vif.cb_slow);
-    vif.cb_slow.rst_i <= 'b0;
+    vif.cb_slow.RST_NEWFREQ_I <= 'b0;
     repeat (2) @(vif.cb_slow);       
   endtask : reset 
 

@@ -15,8 +15,8 @@
 `include "wb_serializer_pkg.sv"
 
 module wb_serializer (
-    input  logic  clk_i, 
-	input  logic  rst_i,
+    input  logic  CLK_NEWFREQ_I, 
+	input  logic  RST_NEWFREQ_I,
     output logic  data_o,
 	//output logic  ena_o,
 
@@ -103,8 +103,8 @@ assign start = aux_start_q;
 
 logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
 
-always_ff @(posedge clk_i, posedge rst_i) begin
-  if (rst_i) begin
+always_ff @(posedge CLK_NEWFREQ_I, posedge RST_NEWFREQ_I) begin
+  if (RST_NEWFREQ_I) begin
     reg_aux1_start <= 'b0;
     reg_aux2_start <= 'b0;	
 	start_new     <= 'b0;
@@ -120,8 +120,8 @@ always_ff @(posedge clk_i, posedge rst_i) begin
 end
 
   serializer_in mod_serialin (
-    .clk_i(clk_i),
-    .rst_i(rst_i),
+    .clk_i(CLK_NEWFREQ_I),
+    .rst_i(RST_NEWFREQ_I),
     .start_i(start_new),
     .data_i(data),       
     .data_o(data_o),

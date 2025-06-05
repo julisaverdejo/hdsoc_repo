@@ -1,10 +1,10 @@
 interface top_if (
     input logic CLK_I,
-    input logic clk_i
+    input logic CLK_NEWFREQ_I
  ); 
     
     // New clock signal
-    logic  rst_i;     
+    logic  RST_NEWFREQ_I;     
     logic  data_o;
     //logic        ena_o;
 
@@ -34,9 +34,9 @@ interface top_if (
     //input   ena_o;
   endclocking
 
-  clocking cb_slow @(posedge clk_i); 
+  clocking cb_slow @(posedge CLK_NEWFREQ_I); 
     default output #20ns; //these times are applied after 1 clk cycle
-    output  rst_i;
+    output  RST_NEWFREQ_I;
     input   data_o;
   endclocking
 
