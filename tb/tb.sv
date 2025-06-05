@@ -5,10 +5,16 @@ module tb;
   logic CLK_I = 0;
   always #(ClkPeriod / 2) CLK_I = ~CLK_I;
 
-  // New clock signal - 25 MHz
-  localparam time ClkPeriodNew = 40ns;
+  // // New clock signal - 25 MHz
+  // localparam time ClkPeriodNew = 40ns;
+  // logic clk_i = 0;
+  // always #(ClkPeriodNew / 2) clk_i = ~clk_i;
+
+  // New clock signal - 62.5 MHz
+  localparam time ClkPeriodNew = 16ns;
   logic clk_i = 0;
   always #(ClkPeriodNew / 2) clk_i = ~clk_i;
+
 
   // interface
   top_if vif (CLK_I, clk_i);

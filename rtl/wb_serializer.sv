@@ -39,7 +39,7 @@ module wb_serializer (
   // Internal signals
   logic start, aux_start_d, aux_start_q;
   //logic ena;
-  logic eot, reg_aux1_eot, reg_aux2_eot, eot_slow; 
+  logic eot, reg_aux1_eot, reg_aux2_eot, eot_new; 
 
   // WISHBONE BUS INTERNAL SIGNALS
     
@@ -55,7 +55,7 @@ always_comb begin
 		ADR_WRITE: begin	
 		  DAT_O = 'b0;
 		  ERR_O = 'b0;			
-		  ACK_O = WE_I ? eot_slow : STB_I;
+		  ACK_O = WE_I ? eot_new : STB_I;
 		end
 /*
 		ADR_READ: begin	
@@ -101,20 +101,20 @@ end
 assign aux_start_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
 assign start = aux_start_q;
 
-logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_slow;
+logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
 
 always_ff @(posedge clk_i, posedge rst_i) begin
   if (rst_i) begin
     reg_aux1_start <= 'b0;
     reg_aux2_start <= 'b0;	
-	start_slow     <= 'b0;
+	start_new     <= 'b0;
   end else begin
     reg_aux1_start <= start;
     reg_aux2_start <= reg_aux1_start;
 	if (reg_aux2_start == 0 && reg_aux1_start == 1) begin
-      start_slow <= 1'b1;
+      start_new <= 1'b1;
 	end else begin
-	  start_slow <= 1'b0;
+	  start_new <= 1'b0;
 	end
   end
 end
@@ -122,27 +122,20 @@ end
   serializer_in mod_serialin (
     .clk_i(clk_i),
     .rst_i(rst_i),
-    .start_i(start_slow),
+    .start_i(start_new),
     .data_i(data),       
     .data_o(data_o),
 	//.ena_o(ena),
 	.eot_o(eot)
   );
  
-
   always_ff @(posedge CLK_I, posedge RST_I) begin
 	if (RST_I) begin
-      reg_aux1_eot <= 'b0;
-      reg_aux2_eot <= 'b0;	  
-      eot_slow <= 'b0;
+      reg_aux1_eot <= 'b0;  
+      eot_new <= 'b0;
 	end else begin
       reg_aux1_eot <= eot;
-      reg_aux2_eot <= reg_aux1_eot;	
-	  if (reg_aux2_eot == 0 && reg_aux1_eot == 1) begin
-		eot_slow <= 1'b1;
-	  end else begin
-		eot_slow <= 1'b0;
-	  end
+	  eot_new <= reg_aux1_eot;
 	end
   end
     
