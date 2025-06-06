@@ -36,12 +36,20 @@ module wb_serializer (
   import WBSerializer::*;
   localparam ADDR_SIZE = $bits(NUM_REGS);
 
-  // Internal signals
+  //========================= Internal signals ========================= 
+  // Signals for start with WB_FREQ
   logic start, aux_start_d, aux_start_q;
   //logic ena;
-  logic eot, reg_aux1_eot, reg_aux2_eot, eot_new; 
 
-  // WISHBONE BUS INTERNAL SIGNALS
+  // Signals for start_new with CLK_NEWFREQ
+  logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
+
+  // Signals for end of transaction with CLK_NEWFREQ
+  logic eot_stretch, eot_aux1, eot_aux2, eot_aux3;
+  logic eot_new;
+
+
+  //========================= WISHBONE BUS INTERNAL SIGNALS ========================= 
     
   //Signal declaration
   logic [31:0] data;
@@ -50,74 +58,74 @@ module wb_serializer (
 
 	// READ: SLAVE ---> MASTER
 
-always_comb begin
-	case (ADR_I[ADDR_SIZE-1:0])				
-		ADR_WRITE: begin	
-		  DAT_O = 'b0;
-		  ERR_O = 'b0;			
-		  ACK_O = WE_I ? eot_new : STB_I;
-		end
-/*
-		ADR_READ: begin	
-			DAT_O = {31'b0, ena};
-			ERR_O = 'b0;		
-			ACK_O = WE_I ? pkt : STB_I;
-		end
-*/
-		default:	begin
-			DAT_O = 'b0;	
-			ERR_O = 'b0;		
-			ACK_O = 'b0;
-		end
-	endcase
-end
+  always_comb begin
+  	 case (ADR_I[ADDR_SIZE-1:0])				
+  	   ADR_WRITE: begin	
+  	     DAT_O = 'b0;
+  	     ERR_O = 'b0;			
+  	     ACK_O = WE_I ? eot_new : STB_I;
+  	   end
+  /*
+  		ADR_READ: begin	
+  			DAT_O = {31'b0, ena};
+  			ERR_O = 'b0;		
+  			ACK_O = WE_I ? pkt : STB_I;
+  		end
+  */
+  		default:	begin
+  		  DAT_O = 'b0;	
+  		  ERR_O = 'b0;		
+  		  ACK_O = 'b0;
+  		end
+  	endcase
+  end
 
 // WRITE: MASTER ---> SLAVE
 
-always_ff @(posedge CLK_I) begin
-  if (RST_I) begin
-    //start <= 'b0;
-	data  <= 'b0;
-	aux_start_q <= 1'b0;
-  end else begin
-    //start <= 'b0;
-    aux_start_q <= aux_start_d;
-	if (WE_I && STB_I) begin
-	  case (ADR_I[ADDR_SIZE-1:0])	
+  always_ff @(posedge CLK_I) begin
+    if (RST_I) begin
+      //start <= 'b0;
+	  data  <= 'b0;
+	  aux_start_q <= 1'b0;
+    end else begin
+      //start <= 'b0;
+      aux_start_q <= aux_start_d;
+	  if (WE_I && STB_I) begin
+	    case (ADR_I[ADDR_SIZE-1:0])	
 
-	    ADR_WRITE: begin
-	      //start <= 'b1;
-	      data  <= DAT_I;
-	    end				
+	      ADR_WRITE: begin
+	        //start <= 'b1;
+	        data  <= DAT_I;
+	      end				
 
-	    default: begin
-	    end
-	  endcase
+	      default: begin
+	      end
+	    endcase
+      end
     end
   end
-end
 
-//assign ena_o = ena;
-assign aux_start_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
-assign start = aux_start_q;
+  //assign ena_o = ena;
+  assign aux_start_d = CYC_I & STB_I & WE_I & (ADR_I == ADR_WRITE);
+  assign start = aux_start_q;
 
-logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
+  //========================= CROSSING CLOCK DOMAIN ========================= 
 
-always_ff @(posedge CLK_NEWFREQ_I, posedge RST_NEWFREQ_I) begin
-  if (RST_NEWFREQ_I) begin
-    reg_aux1_start <= 'b0;
-    reg_aux2_start <= 'b0;	
-	start_new     <= 'b0;
-  end else begin
-    reg_aux1_start <= start;
-    reg_aux2_start <= reg_aux1_start;
-	if (reg_aux2_start == 0 && reg_aux1_start == 1) begin
-      start_new <= 1'b1;
-	end else begin
-	  start_new <= 1'b0;
-	end
+  always_ff @(posedge CLK_NEWFREQ_I, posedge RST_NEWFREQ_I) begin
+    if (RST_NEWFREQ_I) begin
+      reg_aux1_start <= 'b0;
+      reg_aux2_start <= 'b0;	
+	  start_new     <= 'b0;
+    end else begin
+      reg_aux1_start <= start;
+      reg_aux2_start <= reg_aux1_start;
+	  if (reg_aux2_start == 0 && reg_aux1_start == 1) begin
+        start_new <= 1'b1;
+	  end else begin
+	    start_new <= 1'b0;
+	  end
+    end
   end
-end
 
   serializer_in mod_serialin (
     .clk_i(CLK_NEWFREQ_I),
@@ -128,16 +136,27 @@ end
 	//.ena_o(ena),
 	.eot_o(eot)
   );
- 
-  always_ff @(posedge CLK_I, posedge RST_I) begin
-	if (RST_I) begin
-      reg_aux1_eot <= 'b0;  
-      eot_new <= 'b0;
+
+  always_ff @(posedge CLK_NEWFREQ_I, posedge RST_NEWFREQ_I) begin
+	if(RST_NEWFREQ_I) begin
+	  eot_stretch <= 1'b0;
+	end else if (eot) begin
+      eot_stretch <= ~eot_stretch;
 	end else begin
-      reg_aux1_eot <= eot;
-	  eot_new <= reg_aux1_eot;
+	  eot_stretch <= eot_stretch;
 	end
   end
-    
 
+  always_ff @(posedge CLK_I, posedge RST_I) begin
+	if(RST_I) begin
+	  eot_aux1 <= 1'b0;
+	  eot_aux2 <= 1'b0;
+	  eot_aux3 <= 1'b0;
+	end else begin
+	  eot_aux1 <= eot_stretch;
+	  eot_aux2 <= eot_aux1;
+	  eot_aux3 <= eot_aux2;
+	end
+  end
+  assign eot_new = eot_aux3 ^ eot_aux2;
 endmodule
