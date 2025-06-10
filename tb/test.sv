@@ -16,7 +16,7 @@ module test (
     vif.inputdata_i = 1'b0;
     repeat (2) @(vif.cb); 
     vif.rst_i = 1'b0;
-    repeat (2) @(vif.cb);
+    @(vif.cb);
   endtask : reset 
 
   task automatic send();

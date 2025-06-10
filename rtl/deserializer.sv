@@ -34,7 +34,7 @@ module deserializer #(
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin 
       rdisp_q     <= 'd0;
-      shift_reg_q <= 'd0;
+      shift_reg_q <= 'd0011110100;
       shift_reg_d <= 'd0;
       cnt_bits    <= 'd9;
       coderr_q    <= 'b0;
