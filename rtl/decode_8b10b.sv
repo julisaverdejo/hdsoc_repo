@@ -163,3 +163,4 @@ module decode_8b10b (datain, dispin, dataout, dispout, code_err, disp_err) ;
 		      (disp6p & disp4p) | (disp6n & disp4n)) ;
 
 endmodule
+ 
