@@ -20,10 +20,10 @@ module test (
   endtask : reset 
 
   task automatic send();
-    logic [9:0] datain = 10'b1001110100;
+    logic [9:0] datain = 10'b1100011011;
     for (int i = 0; i < 10; i++) begin
-      @(vif.cb);
       vif.inputdata_i = datain[i];
+      @(vif.cb);
     end
 
     repeat (2) @(vif.cb);       

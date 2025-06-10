@@ -26,8 +26,8 @@ module deserializer #(
     .dispin(rdisp_q), 
     .dataout(outputdata_o), 
     .dispout(rdisp_d), 
-    .code_err(code_err_o), 
-    .disp_err(disp_err_o)
+    .code_err(coderr), 
+    .disp_err(disperr)
   );
   
 
@@ -37,15 +37,15 @@ module deserializer #(
       shift_reg_q <= 'd0;
       shift_reg_d <= 'd0;
       cnt_bits    <= 'd9;
-      //coderr_q    <= 'b0;
-     // disperr_q   <= 'b0;
+      coderr_q    <= 'b0;
+      disperr_q   <= 'b0;
     end else begin 
       if (eob) begin 
         rdisp_q   <= rdisp_d;
         shift_reg_q <= shift_reg_d;
         cnt_bits  <= 'b0;
-        //coderr_q  <= coderr;
-        //disperr_q <= disperr;
+        coderr_q  <= coderr;
+        disperr_q <= disperr;
       end else begin 
         shift_reg_d <= {shift_reg_d[WIDTH-2:0], inputdata_i};
         cnt_bits  <= cnt_bits + 1;
@@ -55,7 +55,7 @@ module deserializer #(
 
   assign eob = (cnt_bits == 'd9);
   assign eob_o = eob;
-  //assign code_err_o = coderr_q;
-  //assign disp_err_o = disperr_q;
+  assign code_err_o = coderr_q;
+  assign disp_err_o = disperr_q;
 
 endmodule
