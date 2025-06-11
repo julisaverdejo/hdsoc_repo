@@ -33,21 +33,23 @@ module deserializer #(
 
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin 
-      rdisp_q     <= 'd0;
-      shift_reg_q <= 'd0011110100;
-      shift_reg_d <= 'd0;
+      rdisp_q     <= 1'b0;
+      shift_reg_q <= 10'b1001111100;
+      // shift_reg_d <= 'd0;
       cnt_bits    <= 'd9;
-      coderr_q    <= 'b0;
-      disperr_q   <= 'b0;
+      coderr_q    <= 1'b0;
+      disperr_q   <= 1'b0;
     end else begin 
       if (eob) begin 
         rdisp_q   <= rdisp_d;
-        shift_reg_q <= shift_reg_d;
+        // shift_reg_q <= shift_reg_d;
+        shift_reg_q <= shift_reg_q;
         cnt_bits  <= 'b0;
         coderr_q  <= coderr;
         disperr_q <= disperr;
       end else begin 
-        shift_reg_d <= {shift_reg_d[WIDTH-2:0], inputdata_i};
+        // shift_reg_d <= {shift_reg_d[WIDTH-2:0], inputdata_i};
+        shift_reg_q <= {shift_reg_q[WIDTH-2:0], inputdata_i};
         cnt_bits  <= cnt_bits + 1;
       end
     end
