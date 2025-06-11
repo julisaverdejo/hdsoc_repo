@@ -14,7 +14,7 @@ module deserializer #(
   logic coderr_d, disperr_d;
  
   //Signal declaration
-  logic [WIDTH-1:0] shift_reg_q, shift_reg_d, shift_reg, data;
+  logic [WIDTH-1:0] shift_reg_q, shift_reg_d;
   logic [3:0] cnt_bits;  
   logic eob;
   logic rdisp_q, rdisp_d;
@@ -35,29 +35,24 @@ module deserializer #(
     if (rst_i) begin 
       rdisp_q     <= 1'b0;
       shift_reg_q <= 10'd0;
-      shift_reg   <= 10'h27c;
-      cnt_bits    <= 'd10;
+      cnt_bits    <= 'd9;
       coderr_q    <= 1'b0;
       disperr_q   <= 1'b0;
     end else begin 
+      shift_reg_q <= {shift_reg_q[WIDTH-2:0], inputdata_i};
       if (eob) begin 
         rdisp_q   <= rdisp_d;
-        shift_reg_q <= shift_reg_q;
-        shift_reg   <= shift_reg_q;
         cnt_bits  <= 'b0;
         coderr_q  <= coderr_d;
         disperr_q <= disperr_d;
       end else begin 
-        shift_reg   <= shift_reg;
-        shift_reg_q <= {shift_reg_q[WIDTH-2:0], inputdata_i};
         cnt_bits  <= cnt_bits + 1;
       end
     end
   end
 
-  assign eob = (cnt_bits == 'd10);
+  assign eob = (cnt_bits == 'd9);
   assign eob_o = eob;
-  assign data = eob ? shift_reg_q: shift_reg;
   assign code_err_o = coderr_q;
   assign disp_err_o = disperr_q;
 

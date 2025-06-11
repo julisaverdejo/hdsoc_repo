@@ -20,9 +20,9 @@ module test (
   endtask : reset 
 
   task automatic send();
-    logic [9:0] d0_n = 10'b1001110100;
-    logic [9:0] d7_p = 10'b0001110100;
-    logic [9:0] d10_n = 10'b0101011011;
+    logic [9:0] d0_n = 10'b1001110100; //
+    logic [9:0] d7_p = 10'b0001110100; //
+    logic [9:0] d10_n = 10'b0101011011; //36A
     logic [29:0] datain = {d0_n,d7_p,d10_n};
     for (int i = 0; i < 30; i++) begin
       vif.inputdata_i = datain[i];
