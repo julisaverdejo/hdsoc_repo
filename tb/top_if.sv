@@ -2,13 +2,14 @@ interface top_if (
     // input logic CLK_I,
     // input logic CLK_NEWFREQ_I
     input clk_i
- );
-    logic        rst_i;
-    logic        inputdata_i;
-    logic [8:0]  outputdata_o;
-    logic        code_err_o;
-    logic        disp_err_o;
-    logic        eob_o; 
+);
+
+  logic        rst_i;
+  logic        inputdata_i;
+  logic [8:0]  outputdata_o;
+  logic        code_err_o;
+  logic        disp_err_o;
+  logic        eob_o; 
     
   //   // New clock signal
   //   logic  RST_NEWFREQ_I;     
@@ -50,14 +51,22 @@ interface top_if (
 
   clocking cb @(posedge clk_i); 
     default output #20ns; //these times are applied after 1 clk cycle
-      output   rst_i;
-      output   inputdata_i;
-      input    outputdata_o;
-      input    code_err_o;
-      input    disp_err_o;
-      input    eob_o;
+    output   rst_i;
+    output   inputdata_i;
+    input    outputdata_o;
+    input    code_err_o;
+    input    disp_err_o;
+    input    eob_o;
+  endclocking
 
-
+    clocking cb_neg @(negedge clk_i); 
+    default output #20ns; //these times are applied after 1 clk cycle
+    output   rst_i;
+    output   inputdata_i;
+    input    outputdata_o;
+    input    code_err_o;
+    input    disp_err_o;
+    input    eob_o;
   endclocking
 
 endinterface : top_if

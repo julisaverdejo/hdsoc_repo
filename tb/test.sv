@@ -12,24 +12,33 @@ module test (
   end
 
   task automatic reset();
-    vif.rst_i = 1'b1;
+    vif.rst_i       = 1'b1;
     vif.inputdata_i = 1'b0;
     repeat (2) @(vif.cb); 
-    vif.rst_i = 1'b0;
-    @(vif.cb);
+    vif.cb.rst_i <= 1'b0;
+    $display("[INFO]: Task finished at %5t", $realtime);
   endtask : reset 
 
   task automatic send();
-    logic [9:0] d0_n = 10'b1001110100; //
-    logic [9:0] d7_p = 10'b0001110100; //
-    logic [9:0] d10_n = 10'b0101011011; //36A
+    logic [9:0]  d0_n   = 10'b1001110100;
+    logic [9:0]  d7_p   = 10'b0001110100;
+    logic [9:0]  d10_n  = 10'b0101011011;
     logic [29:0] datain = {d0_n,d7_p,d10_n};
+    @(vif.cb_neg);
     for (int i = 0; i < 30; i++) begin
       vif.inputdata_i = datain[i];
-      @(vif.cb);
+      @(vif.cb_neg);
     end
+    // logic [9:0] d0_n = 10'b1001110100; //
+    // logic [9:0] d7_p = 10'b0001110100; //
+    // logic [9:0] d10_n = 10'b0101011011; //36A
+    // logic [29:0] datain = {d0_n,d7_p,d10_n};
+    // for (int i = 0; i < 30; i++) begin
+    //   vif.inputdata_i = datain[i];
+    //   @(vif.cb);
+    // end
+    // repeat (2) @(vif.cb);
 
-    repeat (2) @(vif.cb);       
   endtask : send
 
 
@@ -151,4 +160,3 @@ module test (
 //   // endtask : capture
 
 endmodule : test
-

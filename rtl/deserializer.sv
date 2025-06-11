@@ -20,9 +20,11 @@ module deserializer #(
   logic rdisp_q, rdisp_d;
   logic coderr_q;
   logic disperr_q;
+  logic [9:0] data_q;
+  logic delay;
 
   decode_8b10b encoder_int (
-    .datain(10'hae), 
+    .datain(data_q), 
     .dispin(rdisp_q), 
     .dataout(outputdata_o), 
     .dispout(rdisp_d), 
@@ -30,12 +32,11 @@ module deserializer #(
     .disp_err(disperr_d)
   );
   
-
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin 
       rdisp_q     <= 1'b0;
       shift_reg_q <= 10'd0;
-      cnt_bits    <= 'd9;
+      cnt_bits    <= 4'd0;
       coderr_q    <= 1'b0;
       disperr_q   <= 1'b0;
     end else begin 
@@ -51,8 +52,26 @@ module deserializer #(
     end
   end
 
+  always_ff @(posedge clk_i or posedge rst_i) begin
+    if (rst_i) begin
+      delay <= 1'b0;
+    end else begin 
+      delay <= eob;
+    end
+  end
+
+  always_ff @(posedge clk_i or posedge rst_i) begin
+    if (rst_i) begin
+      data_q <= 'b1001_111100;
+    end else begin 
+      if (delay) begin
+        data_q <= shift_reg_q;
+      end
+    end
+  end
+
   assign eob = (cnt_bits == 'd9);
-  assign eob_o = eob;
+  assign eob_o = delay;
   assign code_err_o = coderr_q;
   assign disp_err_o = disperr_q;
 
