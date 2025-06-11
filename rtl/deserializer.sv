@@ -36,7 +36,7 @@ module deserializer #(
       rdisp_q     <= 1'b0;
       shift_reg_q <= 10'd0;
       shift_reg   <= 10'h27c;
-      cnt_bits    <= 'd0;
+      cnt_bits    <= 'd10;
       coderr_q    <= 1'b0;
       disperr_q   <= 1'b0;
     end else begin 
@@ -55,7 +55,7 @@ module deserializer #(
     end
   end
 
-  assign eob = (cnt_bits == 'd11);
+  assign eob = (cnt_bits == 'd10);
   assign eob_o = eob;
   assign data = eob ? shift_reg_q: shift_reg;
   assign code_err_o = coderr_q;

@@ -6,7 +6,7 @@ module test (
     reset();
     send();
     // Drain time
-    repeat (10) @(vif.cb); 
+    repeat (20) @(vif.cb); 
     $display("End Of Simulation.");
     $finish;    
   end
@@ -20,8 +20,11 @@ module test (
   endtask : reset 
 
   task automatic send();
-    logic [9:0] datain = 10'b1100011011;
-    for (int i = 0; i < 10; i++) begin
+    logic [9:0] d0_n = 10'b1001110100;
+    logic [9:0] d7_p = 10'b0001110100;
+    logic [9:0] d10_n = 10'b0101011011;
+    logic [29:0] datain = {d0_n,d7_p,d10_n};
+    for (int i = 0; i < 30; i++) begin
       vif.inputdata_i = datain[i];
       @(vif.cb);
     end
