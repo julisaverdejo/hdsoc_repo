@@ -29,6 +29,7 @@ module decode_8b10b (datain, dispin, dataout, dispout, code_err, disp_err) ;
   wire hi = datain[8] ;
   wire ji = datain[9] ;
 
+
   wire aeqb = (ai & bi) | (!ai & !bi) ;
   wire ceqd = (ci & di) | (!ci & !di) ;
   wire p22 = (ai & bi & !ci & !di) |

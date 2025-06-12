@@ -14,7 +14,7 @@ module deserializer #(
   logic coderr_d, disperr_d;
  
   //Signal declaration
-  logic [WIDTH-1:0] shift_reg_q, shift_reg_d;
+  logic [WIDTH-1:0] shift_reg_q;
   logic [3:0] cnt_bits;  
   logic eob;
   logic rdisp_q, rdisp_d;
@@ -34,18 +34,18 @@ module deserializer #(
   
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin 
-      rdisp_q     <= 1'b0;
+      // rdisp_q     <= 1'b0;
       shift_reg_q <= 10'd0;
       cnt_bits    <= 4'd0;
-      coderr_q    <= 1'b0;
-      disperr_q   <= 1'b0;
+      // coderr_q    <= 1'b0;
+      // disperr_q   <= 1'b0;
     end else begin 
       shift_reg_q <= {shift_reg_q[WIDTH-2:0], inputdata_i};
       if (eob) begin 
-        rdisp_q   <= rdisp_d;
+        // rdisp_q   <= rdisp_d;
         cnt_bits  <= 'b0;
-        coderr_q  <= coderr_d;
-        disperr_q <= disperr_d;
+        // coderr_q  <= coderr_d;
+        // disperr_q <= disperr_d;
       end else begin 
         cnt_bits  <= cnt_bits + 1;
       end
@@ -62,11 +62,19 @@ module deserializer #(
 
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin
-      data_q <= 'b1001_111100;
+      data_q    <= 10'b1001_111100; // K28.1 RD-
+      // data_q    <= 10'h183;
+      rdisp_q   <= 1'b0;
+      coderr_q  <= 1'b0;
+      disperr_q <= 1'b0;
     end else begin 
       if (delay) begin
-        data_q <= shift_reg_q;
+        data_q    <= shift_reg_q;
+        rdisp_q   <= rdisp_d;
+        coderr_q  <= coderr_d;
+        disperr_q <= disperr_d;      
       end
+
     end
   end
 

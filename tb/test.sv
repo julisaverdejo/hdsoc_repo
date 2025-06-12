@@ -6,7 +6,7 @@ module test (
     reset();
     send();
     // Drain time
-    repeat (20) @(vif.cb); 
+    repeat (30) @(vif.cb); 
     $display("End Of Simulation.");
     $finish;    
   end
