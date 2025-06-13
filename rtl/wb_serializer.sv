@@ -40,6 +40,7 @@ module wb_serializer (
   // Signals for start with WB_FREQ
   logic start, aux_start_d, aux_start_q;
   //logic ena;
+  logic start_read;
 
   // Signals for start_new with CLK_NEWFREQ
   logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
@@ -53,8 +54,22 @@ module wb_serializer (
     
   //Signal declaration
   logic [31:0] data;
+  logic [8:0] wrd8b_data_in;
 
 // WISHBONE BUS
+
+  assign start_read = (CYC_I && STB_I && ~WE_I && (ADR_I = ADR_READ) && eob);
+
+  always_ff @(posedge CLK_I) begin
+	if (RST_I) begin
+	  wrd8b_data_in <= 9'b0; 
+	end else begin
+	  if (start_read) begin
+	    wrd8b_data_in <= outputdata;
+	  end else begin
+	    wrd8b_data_in <= wrd8b_data_in;
+	  end
+  end
 
 	// READ: SLAVE ---> MASTER
 
