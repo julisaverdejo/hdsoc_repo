@@ -5,9 +5,10 @@ module deserializer #(
     input  logic        rst_i,
     input  logic        inputdata_i,
     output logic [8:0]  outputdata_o,
-    output logic        code_err_o,
-    output logic        disp_err_o,
-    output logic        eob_o
+    // output logic        code_err_o,
+    // output logic        disp_err_o,
+    output logic        eob_o,
+    output logic        err_o
 );
 
   //Internal signals
@@ -34,18 +35,12 @@ module deserializer #(
   
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin 
-      // rdisp_q     <= 1'b0;
       shift_reg_q <= 10'd0;
       cnt_bits    <= 4'd0;
-      // coderr_q    <= 1'b0;
-      // disperr_q   <= 1'b0;
     end else begin 
       shift_reg_q <= {shift_reg_q[WIDTH-2:0], inputdata_i};
       if (eob) begin 
-        // rdisp_q   <= rdisp_d;
         cnt_bits  <= 'b0;
-        // coderr_q  <= coderr_d;
-        // disperr_q <= disperr_d;
       end else begin 
         cnt_bits  <= cnt_bits + 1;
       end
@@ -63,7 +58,6 @@ module deserializer #(
   always_ff @(posedge clk_i or posedge rst_i) begin
     if (rst_i) begin
       data_q    <= 10'b1001_111100; // K28.1 RD-
-      // data_q    <= 10'h183;
       rdisp_q   <= 1'b0;
       coderr_q  <= 1'b0;
       disperr_q <= 1'b0;
@@ -80,7 +74,8 @@ module deserializer #(
 
   assign eob = (cnt_bits == 'd9);
   assign eob_o = delay;
-  assign code_err_o = coderr_q;
-  assign disp_err_o = disperr_q;
+  // assign code_err_o = coderr_q;
+  // assign disp_err_o = disperr_q;
+  assign 
 
 endmodule
