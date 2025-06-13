@@ -17,6 +17,7 @@
 module wb_serializer (
     input  logic  CLK_NEWFREQ_I, 
 	input  logic  RST_NEWFREQ_I,
+	input  logic  INPUTDATA_I,
     output logic  data_o,
 	//output logic  ena_o,
 
@@ -41,6 +42,8 @@ module wb_serializer (
   logic start, aux_start_d, aux_start_q;
   //logic ena;
   logic start_read;
+  logic [8:0] outputdata;
+  logic eob, err;
 
   // Signals for start_new with CLK_NEWFREQ
   logic reg_aux1_start, reg_aux2_start, reg_aux3_start, start_new;
@@ -48,6 +51,17 @@ module wb_serializer (
   // Signals for end of transaction with CLK_NEWFREQ
   logic eot_stretch, eot_aux1, eot_aux2, eot_aux3;
   logic eot_new;
+
+
+  deserializer #(.WIDTH(10))
+  (
+    .clk_i(CLK_NEWFREQ_I),
+    .rst_i(RST_NEWFREQ_I),
+    .inputdata_i(INPUTDATA_I),
+    .outputdata_o(outputdata),
+    .eob_o(eob),
+    .err_o(err)
+  );
 
 
   //========================= WISHBONE BUS INTERNAL SIGNALS ========================= 
