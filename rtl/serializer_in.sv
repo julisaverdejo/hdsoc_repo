@@ -19,7 +19,7 @@ module serializer_in (
     input  logic        start_i,
     input  logic [31:0] data_i,       
     output logic        data_o,
-    output logic        ena_o,
+    //output logic        ena_o,
     output logic        eot_o
 );
 
@@ -79,7 +79,7 @@ module serializer_in (
 
       ST_SYNC: begin
         if (ena) begin
-          if (cnt_pkt_d == 4) begin
+          if (cnt_pkt_d == 5) begin
             eot_d = 'b1;
             cnt_pkt_d = 0;
             state_next = ST_IDLE;
@@ -99,11 +99,11 @@ module serializer_in (
       3'd1 : data_d = {1'b0, data_i[7:0]};
       3'd2 : data_d = {1'b0, data_i[15:8]};
       3'd3 : data_d = {1'b0, data_i[23:16]};
+      3'd4 : data_d = {1'b0, 8'hFC};
       default : data_d = {KCODE, COMMA};
     endcase
   end
 
-  assign cnt_pkt_o = cnt_pkt_q;
-  assign ena_o = ena;
+  //assign ena_o = ena;
   assign eot_o = eot_q;
 endmodule

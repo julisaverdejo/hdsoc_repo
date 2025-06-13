@@ -1,8 +1,12 @@
 interface top_if (
-    input logic CLK_I
+    input logic CLK_I,
+    input logic CLK_NEWFREQ_I
  ); 
-    logic        data_o;
-    logic        ena_o;
+    
+    // New clock signal
+    logic  RST_NEWFREQ_I;     
+    logic  data_o;
+    //logic        ena_o;
 
     // WISHBONE BUS INTERFACE
 		logic        RST_I;  // synchronous reset
@@ -26,8 +30,15 @@ interface top_if (
     input   ACK_O;
     input   ERR_O;
     input   DAT_O;
-    input   data_o;
-    input   ena_o;
+    //input   data_o;
+    //input   ena_o;
   endclocking
-  
+
+  clocking cb_slow @(posedge CLK_NEWFREQ_I); 
+    default output #20ns; //these times are applied after 1 clk cycle
+    output  RST_NEWFREQ_I;
+    input   data_o;
+  endclocking
+
+
 endinterface : top_if
