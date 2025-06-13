@@ -53,8 +53,7 @@ module tb;
     .rst_i(vif.rst_i),
     .inputdata_i(vif.inputdata_i),
     .outputdata_o(vif.outputdata_o),
-    .code_err_o(vif.code_err_o),
-    .disp_err_o(vif.disp_err_o),
+    .err_o(vif.err_o),
     .eob_o(vif.eob_o)
   );
 

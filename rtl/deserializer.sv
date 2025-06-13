@@ -5,8 +5,6 @@ module deserializer #(
     input  logic        rst_i,
     input  logic        inputdata_i,
     output logic [8:0]  outputdata_o,
-    // output logic        code_err_o,
-    // output logic        disp_err_o,
     output logic        eob_o,
     output logic        err_o
 );
@@ -74,8 +72,6 @@ module deserializer #(
 
   assign eob = (cnt_bits == 'd9);
   assign eob_o = delay;
-  // assign code_err_o = coderr_q;
-  // assign disp_err_o = disperr_q;
-  assign 
+  assign err_o = (coderr_q || disperr_q);
 
 endmodule

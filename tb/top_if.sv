@@ -7,8 +7,7 @@ interface top_if (
   logic        rst_i;
   logic        inputdata_i;
   logic [8:0]  outputdata_o;
-  logic        code_err_o;
-  logic        disp_err_o;
+  logic        err_o;
   logic        eob_o; 
     
   //   // New clock signal
@@ -54,8 +53,7 @@ interface top_if (
     output   rst_i;
     output   inputdata_i;
     input    outputdata_o;
-    input    code_err_o;
-    input    disp_err_o;
+    input    err_o;
     input    eob_o;
   endclocking
 
@@ -64,8 +62,7 @@ interface top_if (
     output   rst_i;
     output   inputdata_i;
     input    outputdata_o;
-    input    code_err_o;
-    input    disp_err_o;
+    input    err_o;
     input    eob_o;
   endclocking
 
