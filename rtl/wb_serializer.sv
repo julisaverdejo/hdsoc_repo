@@ -42,6 +42,7 @@ module wb_serializer (
   logic start, aux_start_d, aux_start_q;
   //logic ena;
   logic start_read;
+  logic [8:0] wrd8b_data_q, wrd8b_data_in;
   logic [8:0] outputdata;
   logic eob, err;
 
@@ -68,22 +69,31 @@ module wb_serializer (
     
   //Signal declaration
   logic [31:0] data;
-  logic [8:0] wrd8b_data_in;
+
 
 // WISHBONE BUS
 
-  assign start_read = (CYC_I && STB_I && ~WE_I && (ADR_I = ADR_READ) && eob);
 
-  always_ff @(posedge CLK_I) begin
+// start read to know when the conversion is finished and pass the 8-bit DAT_I (WB signal)
+  assign start_read = (CYC_I && STB_I && ~WE_I && (ADR_I = ADR_READ) && EOB);
+
+// Add a flip-flop to pass from one clk frequency to another (WB Frequency)
+  always_ff @(posedge CLK_I, posedge RST_I) begin
 	if (RST_I) begin
 	  wrd8b_data_in <= 9'b0; 
 	end else begin
 	  if (start_read) begin
-	    wrd8b_data_in <= outputdata;
+	    wrd8b_data_q <= outputdata;
+        wrd8b_data_in <= wrd8b_data_q;
 	  end else begin
 	    wrd8b_data_in <= wrd8b_data_in;
 	  end
   end
+
+
+
+
+
 
 	// READ: SLAVE ---> MASTER
 
@@ -96,7 +106,7 @@ module wb_serializer (
   	   end
   /*
   		ADR_READ: begin	
-  			DAT_O = {31'b0, ena};
+  			DAT_O = {24'b0, wrd8b_data_in};
   			ERR_O = 'b0;		
   			ACK_O = WE_I ? pkt : STB_I;
   		end
