@@ -119,7 +119,7 @@ module wb_serializer (
 	  end
   end
 
-
+/*
 	// READ: SLAVE ---> MASTER
 
   always_comb begin
@@ -129,13 +129,13 @@ module wb_serializer (
   	     ERR_O = 'b0;			
   	     ACK_O = WE_I ? eot_new : STB_I;
   	   end
-  /*
-  		ADR_READ: begin	
-  			DAT_O = {24'b0, wrd8b_data_in};
-  			ERR_O = 'b0;		
-  			ACK_O = WE_I ? pkt : STB_I;
-  		end
-  */
+  
+  		// ADR_READ: begin	
+  		// 	DAT_O = {24'b0, wrd8b_data_in};
+  		// 	ERR_O = 'b0;		
+  		// 	ACK_O = WE_I ? pkt : STB_I;
+  		// end
+  
   		default:	begin
   		  DAT_O = 'b0;	
   		  ERR_O = 'b0;		
@@ -148,24 +148,29 @@ module wb_serializer (
 
   always_ff @(posedge CLK_I) begin
     if (RST_I) begin
-      //start <= 'b0;
 	  data  <= 'b0;
-	  aux_start_write_q <= 1'b0;
     end else begin
-      //start <= 'b0;
-      aux_start_write_q <= aux_start_write_d;
-	  if (WE_I && STB_I) begin
-	    case (ADR_I[ADDR_SIZE-1:0])	
+	    if (WE_I && STB_I) begin
+	      case (ADR_I[ADDR_SIZE-1:0])	
 
-	      ADR_WRITE: begin
-	        //start <= 'b1;
-	        data  <= DAT_I;
-	      end				
+	        ADR_WRITE: begin
+	          data  <= DAT_I;
+	        end				
 
-	      default: begin
-	      end
-	    endcase
+	        default: begin
+	        end
+	      endcase
       end
+    end
+  end
+
+*/
+
+  always_ff @(posedge CLK_I, posedge RST_I) begin
+    if (RST_I) begin
+	    aux_start_write_q <= 1'b0;
+    end else begin
+      aux_start_write_q <= aux_start_write_d;
     end
   end
 
